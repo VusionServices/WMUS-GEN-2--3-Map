@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WMUS EdgeSense Gen 2 â†’ Gen 3 Conversion Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; background: #f5f5f0; }
+  .header { background: oklch(18% 0.015 240); padding: 14px 24px; display: flex; align-items: center; gap: 16px; }
+  .header h1 { color: #fff; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; }
+  .header .date { color: oklch(76% 0.01 240); font-size: 0.76rem; font-weight: 600; margin-left: auto; }
+  .legend { display: flex; gap: 14px; padding: 10px 24px; background: #fff; border-bottom: 1px solid #ddd; font-size: 0.72rem; font-weight: 700; flex-wrap: wrap; }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  #map { height: calc(100vh - 92px); width: 100%; }
+  .popup-store { font-size: 14px; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
+  .popup-city { font-size: 12px; color: #555; margin-bottom: 2px; }
+  .popup-addr { font-size: 11px; color: #888; margin-bottom: 6px; }
+  .popup-row { font-size: 12px; margin-bottom: 2px; }
+  .popup-row strong { font-weight: 700; }
+  .popup-link { display: inline-block; margin-top: 6px; padding: 4px 10px; background: oklch(45% 0.12 175); color: #fff; border-radius: 4px; font-size: 11px; font-weight: 700; text-decoration: none; }
+  .popup-link:hover { opacity: 0.85; }
+  .popup-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+  .badge-complete { background: #e8f5ee; color: #2e8b57; }
+  .badge-ready { background: #fdf2e6; color: #8a4a00; }
+  .badge-pending { background: #f3eefa; color: #5b2fa0; }
+  .badge-watch { background: #fdf6e3; color: #7a5700; }
+  .badge-atrisk { background: #fce8e8; color: #a32020; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>WMUS EdgeSense Gen 2 â†’ Gen 3 Conversion</h1>
+  <span class="date">Wed, Sep 23, 2026 Â· 24 stores</span>
+</div>
+
+<div class="legend">
+  <span><span class="dot" style="background:#2e8b57"></span>Complete</span>
+  <span><span class="dot" style="background:#e67e22"></span>Ready</span>
+  <span><span class="dot" style="background:#7b4fbf"></span>Pending</span>
+  <span><span class="dot" style="background:#d4a020"></span>Watch</span>
+  <span><span class="dot" style="background:#c84040"></span>At Risk</span>
+</div>
+
+<div id="map"></div>
+
+<script>
+const TODAY = new Date(2026, 8, 23);
+
+const STORES = [
+  { n: "#371", c: "Granbury, TX", addr: "735 E Highway 377", st: "vendor quote requested", i: "10/11/26", lat: 32.4421, lng: -97.7942 },
+  { n: "#384", c: "Lumberton, TX", addr: "100 No. LHS Drive", st: "vendor quote requested", i: "10/11/26", lat: 30.2657, lng: -94.1996 },
+  { n: "#396", c: "Anderson, SC", addr: "3812 Liberty Hwy", st: "vendor quote requested", i: "10/11/26", lat: 34.5034, lng: -82.6501 },
+  { n: "#427", c: "Greenville, TX", addr: "7401 Interstate Highway 30", st: "vendor quote requested", i: "10/11/26", lat: 33.1385, lng: -96.1108 },
+  { n: "#516", c: "Gun Barrel City, TX", addr: "1200 W Main St", st: "vendor quote requested", i: "10/11/26", lat: 32.3293, lng: -96.1344 },
+  { n: "#872", c: "Pearland, TX", addr: "1919 N Main St", st: "vendor quote requested", i: "10/11/26", lat: 29.5636, lng: -95.2860 },
+  { n: "#963", c: "Weatherford, TX", addr: "1836 S Main St", st: "vendor quote requested", i: "10/11/26", lat: 32.7593, lng: -97.7973 },
+  { n: "#980", c: "Greeley, CO", addr: "3103 S 23rd Ave", st: "vendor quote requested", i: "10/11/26", lat: 40.4233, lng: -104.7091 },
+  { n: "#1225", c: "Orange Park, FL", addr: "899 Blanding Blvd", st: "vendor quote requested", i: "10/18/26", lat: 30.1661, lng: -81.7065 },
+  { n: "#1535", c: "Sioux Falls, SD", addr: "3209 S Louise Ave", st: "vendor quote requested", i: "10/11/26", lat: 43.5460, lng: -96.7313 },
+  { n: "#1560", c: "Las Vegas, NV", addr: "6005 S Eastern Ave", st: "vendor quote requested", i: "10/11/26", lat: 36.0858, lng: -115.0840 },
+  { n: "#1770", c: "Cranberry Twp, PA", addr: "20245 Route 19", st: "vendor quote requested", i: "10/11/26", lat: 40.6850, lng: -80.1070 },
+  { n: "#2082", c: "Cerritos, CA", addr: "12701 Towne Center Dr", st: "vendor quote requested", i: "10/04/26", lat: 33.8583, lng: -118.0648 },
+  { n: "#2135", c: "Cobleskill, NY", addr: "139 Merchant Pl", st: "vendor quote requested", i: "10/11/26", lat: 42.6779, lng: -74.4854 },
+  { n: "#2667", c: "Dallas, TX", addr: "7401 Samuell Blvd", st: "vendor quote requested", i: "10/04/26", lat: 32.7767, lng: -96.7970 },
+  { n: "#3284", c: "Arlington, TX", addr: "4800 US 287 Highway", st: "vendor quote requested", i: "10/04/26", lat: 32.7357, lng: -97.1081 },
+  { n: "#3431", c: "Hudson Oaks, TX", addr: "2801 E Interstate 20", st: "vendor quote requested", i: "10/04/26", lat: 32.7579, lng: -97.6967 },
+  { n: "#3631", c: "Crowley, TX", addr: "1221 FM 1187", st: "vendor quote requested", i: "10/04/26", lat: 32.5790, lng: -97.3625 },
+  { n: "#4279", c: "Midlothian, TX", addr: "400 N Highway 67", st: "vendor quote requested", i: "10/04/26", lat: 32.4824, lng: -96.9945 },
+  { n: "#5063", c: "Charlotte, NC", addr: "1830 Galleria Blvd", st: "vendor quote requested", i: "10/18/26", lat: 35.2271, lng: -80.8431 },
+  { n: "#5288", c: "Seagoville, TX", addr: "220 N Highway 175", st: "vendor quote requested", i: "10/04/26", lat: 32.6396, lng: -96.5383 },
+  { n: "#5359", c: "Azle, TX", addr: "721 Boyd Rd", st: "vendor quote requested", i: "10/04/26", lat: 32.8951, lng: -97.5459 },
+  { n: "#5435", c: "San Jose, CA", addr: "777 Story Rd", st: "vendor quote requested", i: "10/11/26", lat: 37.3382, lng: -121.8863 },
+  { n: "#7178", c: "Princeton, TX", addr: "701 W Princeton Dr", st: "vendor quote requested", i: "10/18/26", lat: 33.1801, lng: -96.4980 }
+];
+
+const PIPELINE_SHORT = {
+  "vendor quote to request": "Quote to Request",
+  "vendor quote requested": "Quote Requested",
+  "sow circulation required": "SOW Circulation",
+  "sow sent for signatures": "SOW Signatures",
+  "vendor po to issue": "PO to Issue",
+  "vendor po issued": "PO Issued",
+  "installation scheduled": "Scheduled",
+  "installation completed": "Installed",
+  "sign off received": "Sign-Off",
+  "payment released": "Payment",
+  "scope validated": "Validated",
+  "installation on-hold": "On Hold",
+  "cancelled": "Cancelled",
+  "completed": "Complete"
+};
+
+const PIPELINE = ["vendor quote to request","vendor quote requested","sow circulation required","sow sent for signatures","vendor po to issue","vendor po issued","installation scheduled","installation completed","sign off received","payment released","scope validated","installation on-hold","cancelled","completed"];
+
+function stageIdx(st) { return PIPELINE.indexOf(st); }
+function pD(s) { if (!s) return null; const p = s.split("/"); return new Date(2026, +p[0] - 1, +p[1]); }
+function df(a, b) { return Math.round((a - b) / 864e5); }
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+
+const MILESTONES = {
+  quote: { confirmedAt: 2, deadlineDays: 14 },
+  procurement: { confirmedAt: 5, deadlineDays: 7 },
+  scheduling: { confirmedAt: 6, deadlineDays: 3 }
+};
+
+function milestoneStatus(s, key) {
+  const m = MILESTONES[key];
+  const idx = stageIdx(s.st);
+  const install = pD(s.i);
+  const deadline = addDays(install, -m.deadlineDays);
+  if (idx >= m.confirmedAt) return "ready";
+  const d = df(deadline, TODAY);
+  if (d < 0) return "atrisk";
+  if (d <= 5) return "watch";
+  return "pending";
+}
+
+const RANK = { atrisk: 0, watch: 1, pending: 2, ready: 3 };
+
+function evaluate(s) {
+  const idx = stageIdx(s.st);
+  if (idx >= 7 || s.st === "completed") return "complete";
+  const q = milestoneStatus(s, "quote"), p = milestoneStatus(s, "procurement"), sc = milestoneStatus(s, "scheduling");
+  if (q === "ready" && p === "ready" && sc === "ready") return "ready";
+  const parts = [];
+  if (q !== "ready") parts.push(q);
+  if (p !== "ready") parts.push(p);
+  if (sc !== "ready") parts.push(sc);
+  const worst = parts.sort((a, b) => RANK[a] - RANK[b])[0];
+  return worst === "ready" ? "pending" : worst;
+}
+
+const STATUS_COLOR = { complete: "#2e8b57", ready: "#e67e22", pending: "#7b4fbf", watch: "#d4a020", atrisk: "#c84040" };
+const STATUS_BADGE = { complete: "badge-complete", ready: "badge-ready", pending: "badge-pending", watch: "badge-watch", atrisk: "badge-atrisk" };
+const STATUS_LABEL = { complete: "Complete", ready: "Ready", pending: "Pending", watch: "Watch", atrisk: "At Risk" };
+
+const map = L.map("map").setView([36.5, -96], 4);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom: 18
+}).addTo(map);
+
+STORES.forEach(s => {
+  const overall = evaluate(s);
+  const color = STATUS_COLOR[overall];
+  const install = pD(s.i);
+  const installStr = (install.getMonth() + 1) + "/" + install.getDate() + "/" + install.getFullYear().toString().slice(2);
+  const stageLabel = PIPELINE_SHORT[s.st] || s.st;
+
+  const marker = L.circleMarker([s.lat, s.lng], {
+    radius: 9,
+    fillColor: color,
+    color: "#fff",
+    weight: 2,
+    opacity: 1,
+    fillOpacity: 0.85
+  }).addTo(map);
+
+  marker.bindPopup(
+    '<div class="popup-store">' + s.n + '</div>' +
+    '<div class="popup-city">' + s.c + '</div>' +
+    '<div class="popup-addr">' + s.addr + '</div>' +
+    '<div class="popup-row"><strong>Install:</strong> ' + installStr + '</div>' +
+    '<div class="popup-row"><strong>Stage:</strong> ' + stageLabel + '</div>' +
+    '<div class="popup-row"><strong>Status:</strong> <span class="popup-badge ' + STATUS_BADGE[overall] + '">' + STATUS_LABEL[overall] + '</span></div>' +
+    '<a class="popup-link" href="' + (s.u || "#") + '" target="_blank">Open in ClickUp â†—</a>'
+  );
+
+  marker.bindTooltip(s.n, { permanent: false, direction: "top", offset: [0, -10] });
+});
+</script>
+</body>
+</html>
