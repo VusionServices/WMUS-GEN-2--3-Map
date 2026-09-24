@@ -10,8 +10,6 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'Inter',system-ui,sans-serif;background:#002D58}
-
-  /* HEADER */
   .header{
     background:linear-gradient(135deg,#002D58 0%,#003A6E 100%);
     padding:0 28px;display:flex;align-items:center;gap:20px;height:68px;
@@ -21,8 +19,6 @@
   .header-text{display:flex;flex-direction:column;gap:1px;flex:1}
   .header-title{color:#fff;font-size:.95rem;font-weight:800;letter-spacing:-.01em}
   .header-sub{color:rgba(255,255,255,.45);font-size:.65rem;font-weight:600;letter-spacing:.02em}
-
-  /* SEARCH */
   .search-wrap{position:relative;width:280px;flex-shrink:0}
   .search-input{
     width:100%;padding:8px 14px 8px 36px;border-radius:8px;border:1.5px solid rgba(255,255,255,.12);
@@ -38,21 +34,15 @@
     display:none;box-shadow:0 12px 32px rgba(0,0,0,.4);z-index:2000;
   }
   .search-results.open{display:block}
-  .sr-item{
-    padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);
-    transition:background .15s;
-  }
+  .sr-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);transition:background .15s}
   .sr-item:hover{background:rgba(255,255,255,.06)}
   .sr-item:last-child{border-bottom:none}
   .sr-name{font-size:.82rem;font-weight:800;color:#fff}
   .sr-city{font-size:.68rem;color:rgba(255,255,255,.5);margin-top:1px}
-  .sr-type{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
-    padding:2px 6px;border-radius:4px;display:inline-block;margin-top:4px}
+  .sr-type{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;border-radius:4px;display:inline-block;margin-top:4px}
   .sr-type.b2x{background:rgba(0,113,206,.2);color:#60A5FA}
   .sr-type.wm{background:rgba(124,58,237,.2);color:#C4B5FD}
   .sr-empty{padding:16px;text-align:center;color:rgba(255,255,255,.3);font-size:.78rem}
-
-  /* LEGEND BAR */
   .legend-bar{
     background:#001E3D;padding:8px 28px;display:flex;align-items:center;gap:24px;
     border-bottom:1px solid rgba(255,255,255,.06);
@@ -62,33 +52,23 @@
   .legend-count{font-weight:800;color:rgba(255,255,255,.9)}
   .legend-stat{margin-left:auto;font-size:.68rem;font-weight:700;color:rgba(255,255,255,.4)}
   .legend-stat strong{color:#FFC220}
-
-  /* MAP */
   #map{width:100%;height:calc(100vh - 68px - 37px)}
-
-  /* POPUPS */
   .leaflet-popup-content-wrapper{border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);border:1px solid #E2E8F0;padding:0}
   .leaflet-popup-content{margin:0;min-width:220px}
   .popup{padding:14px 16px}
   .pn{font-size:.95rem;font-weight:800;color:#002D58;margin-bottom:2px}
   .pc{font-size:.78rem;font-weight:600;color:#475569}
   .pa{font-size:.68rem;color:#94A3B8;margin-top:2px}
-  .pt{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
-    padding:4px 10px;border-radius:5px;display:inline-block;margin-top:8px}
+  .pt{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:4px 10px;border-radius:5px;display:inline-block;margin-top:8px}
   .pt.b2x{background:#EFF6FF;color:#0071CE}
   .pt.wm{background:#F5F3FF;color:#7C3AED}
   .pd{font-size:.72rem;font-weight:700;color:#002D58;margin-top:6px}
-
-  .leaflet-control-zoom a{
-    background:#002D58!important;color:#FFC220!important;
-    border-color:rgba(255,255,255,.1)!important;font-weight:800
-  }
+  .leaflet-control-zoom a{background:#002D58!important;color:#FFC220!important;border-color:rgba(255,255,255,.1)!important;font-weight:800}
   .leaflet-control-zoom a:hover{background:#003A6E!important}
 </style>
 </head>
 <body>
 <div class="header">
-  <!-- Walmart Logo (real SVG paths) -->
   <svg class="wm-logo" width="120" height="30" viewBox="55 98 253 48" fill="none" aria-label="Walmart">
     <g><path d="M292.405 118.279C293.651 118.022 304.668 112.963 305.651 112.394C307.896 111.095 308.665 108.218 307.369 105.969C306.072 103.719 303.201 102.948 300.957 104.247C299.973 104.816 290.093 111.848 289.249 112.8C288.281 113.892 288.114 115.453 288.83 116.695C289.546 117.938 290.978 118.573 292.405 118.279Z" fill="#FFC220"/>
     <path d="M305.651 129.48C304.667 128.912 293.65 123.852 292.405 123.596C290.978 123.301 289.546 123.936 288.83 125.179C288.114 126.422 288.281 127.984 289.249 129.074C290.093 130.026 299.974 137.059 300.957 137.627C303.202 138.927 306.073 138.155 307.369 135.906C308.665 133.656 307.895 130.779 305.651 129.48Z" fill="#FFC220"/>
@@ -105,11 +85,11 @@
     <path d="M237 117.61V110.961H231.51V105.862H222.893V128.469C222.893 134.809 226.507 137.779 232.268 137.779C234.948 137.779 236.376 137.246 237 136.848V130.242C236.509 130.598 235.704 130.864 234.677 130.864C232.759 130.907 231.507 130.065 231.507 127.275V117.61H236.997H237Z" fill="#fff"/></g>
   </svg>
   <div class="header-text">
-    <div class="header-title">EdgeSense Gen 2 â†’ Gen 3 Conversion Program</div>
-    <div class="header-sub">Walmart US Rollout â€” 45 Stores</div>
+    <div class="header-title">EdgeSense Gen 2 -> Gen 3 Conversion Program</div>
+    <div class="header-sub">Walmart US Rollout - 45 Stores</div>
   </div>
   <div class="search-wrap">
-    <span class="search-icon">ðŸ”</span>
+    <span class="search-icon">&#128269;</span>
     <input class="search-input" id="searchInput" type="text" placeholder="Search by store #, city, or state..." autocomplete="off"/>
     <div class="search-results" id="searchResults"></div>
   </div>
@@ -168,61 +148,30 @@ var stores = [
   {n:"#804",city:"Mineral Wells, TX",addr:"601 No. FM 1821",type:"wm",label:"Reverse Logistics Only",start:"",lat:32.8084,lng:-98.1128},
   {n:"#896",city:"Grand Prairie, TX",addr:"2225 W Interstate 20",type:"wm",label:"Reverse Logistics Only",start:"",lat:32.7098,lng:-97.0026},
 ];
-
 var map = L.map("map",{zoomControl:true}).setView([34.5,-96],5);
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
-  attribution:"&copy; OpenStreetMap",maxZoom:18
-}).addTo(map);
-
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"&copy; OpenStreetMap",maxZoom:18}).addTo(map);
 var markers = {};
 stores.forEach(function(s){
   var color = s.type === "b2x" ? "#0071CE" : "#7C3AED";
   var border = s.type === "b2x" ? "#002D58" : "#4C1D95";
   var typeCls = s.type === "b2x" ? "b2x" : "wm";
   var startHtml = s.start ? '<div class="pd">Install Start: ' + s.start + '</div>' : '';
-  var m = L.circleMarker([s.lat, s.lng], {radius:9, fillColor:color, color:border, weight:2.5, fillOpacity:0.9})
+  var m = L.circleMarker([s.lat,s.lng],{radius:9,fillColor:color,color:border,weight:2.5,fillOpacity:0.9})
     .addTo(map)
-    .bindPopup('<div class="popup"><div class="pn">' + s.n + '</div><div class="pc">' + s.city + '</div><div class="pa">' + s.addr + '</div><div class="pt ' + typeCls + '">' + s.label + '</div>' + startHtml + '</div>');
-  markers[s.n] = {marker: m, data: s};
+    .bindPopup('<div class="popup"><div class="pn">'+s.n+'</div><div class="pc">'+s.city+'</div><div class="pa">'+s.addr+'</div><div class="pt '+typeCls+'">'+s.label+'</div>'+startHtml+'</div>');
+  markers[s.n] = {marker:m,data:s};
 });
-
-// Search
-var input = document.getElementById("searchInput");
-var results = document.getElementById("searchResults");
-
-input.addEventListener("input", function(){
-  var q = this.value.toLowerCase().trim();
-  if(!q){ results.classList.remove("open"); results.innerHTML=""; return; }
-  var matches = stores.filter(function(s){
-    return s.n.toLowerCase().includes(q) || s.city.toLowerCase().includes(q) || s.addr.toLowerCase().includes(q);
-  }).slice(0,8);
-  if(!matches.length){
-    results.innerHTML='<div class="sr-empty">No stores found</div>';
-    results.classList.add("open"); return;
-  }
-  results.innerHTML = matches.map(function(s){
-    var cls = s.type === "b2x" ? "b2x" : "wm";
-    return '<div class="sr-item" data-store="' + s.n + '"><div class="sr-name">' + s.n + '</div><div class="sr-city">' + s.city + ' â€” ' + s.addr + '</div><div class="sr-type ' + cls + '">' + s.label + '</div></div>';
-  }).join("");
+var input=document.getElementById("searchInput"),results=document.getElementById("searchResults");
+input.addEventListener("input",function(){
+  var q=this.value.toLowerCase().trim();
+  if(!q){results.classList.remove("open");results.innerHTML="";return}
+  var matches=stores.filter(function(s){return s.n.toLowerCase().includes(q)||s.city.toLowerCase().includes(q)||s.addr.toLowerCase().includes(q)}).slice(0,8);
+  if(!matches.length){results.innerHTML='<div class="sr-empty">No stores found</div>';results.classList.add("open");return}
+  results.innerHTML=matches.map(function(s){var cls=s.type==="b2x"?"b2x":"wm";return'<div class="sr-item" data-store="'+s.n+'"><div class="sr-name">'+s.n+'</div><div class="sr-city">'+s.city+' - '+s.addr+'</div><div class="sr-type '+cls+'">'+s.label+'</div></div>'}).join("");
   results.classList.add("open");
 });
-
-results.addEventListener("click", function(e){
-  var item = e.target.closest(".sr-item");
-  if(!item) return;
-  var name = item.dataset.store;
-  var entry = markers[name];
-  if(entry){
-    map.setView([entry.data.lat, entry.data.lng], 12);
-    entry.marker.openPopup();
-  }
-  results.classList.remove("open");
-  input.value = name;
-});
-
-document.addEventListener("click", function(e){
-  if(!e.target.closest(".search-wrap")) results.classList.remove("open");
-});
+results.addEventListener("click",function(e){var item=e.target.closest(".sr-item");if(!item)return;var name=item.dataset.store;var entry=markers[name];if(entry){map.setView([entry.data.lat,entry.data.lng],12);entry.marker.openPopup()}results.classList.remove("open");input.value=name});
+document.addEventListener("click",function(e){if(!e.target.closest(".search-wrap"))results.classList.remove("open")});
 </script>
 </body>
 </html>
