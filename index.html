@@ -2,178 +2,138 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WMUS EdgeSense Gen 2 â†’ Gen 3 Conversion Map</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Walmart EdgeSense Gen 2 to Gen 3 Conversion - Store Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; background: #f5f5f0; }
-  .header { background: oklch(18% 0.015 240); padding: 14px 24px; display: flex; align-items: center; gap: 16px; }
-  .header h1 { color: #fff; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; }
-  .header .date { color: oklch(76% 0.01 240); font-size: 0.76rem; font-weight: 600; margin-left: auto; }
-  .legend { display: flex; gap: 14px; padding: 10px 24px; background: #fff; border-bottom: 1px solid #ddd; font-size: 0.72rem; font-weight: 700; flex-wrap: wrap; }
-  .legend span { display: flex; align-items: center; gap: 4px; }
-  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-  #map { height: calc(100vh - 92px); width: 100%; }
-  .popup-store { font-size: 14px; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
-  .popup-city { font-size: 12px; color: #555; margin-bottom: 2px; }
-  .popup-addr { font-size: 11px; color: #888; margin-bottom: 6px; }
-  .popup-row { font-size: 12px; margin-bottom: 2px; }
-  .popup-row strong { font-weight: 700; }
-  .popup-link { display: inline-block; margin-top: 6px; padding: 4px 10px; background: oklch(45% 0.12 175); color: #fff; border-radius: 4px; font-size: 11px; font-weight: 700; text-decoration: none; }
-  .popup-link:hover { opacity: 0.85; }
-  .popup-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-  .badge-complete { background: #e8f5ee; color: #2e8b57; }
-  .badge-ready { background: #fdf2e6; color: #8a4a00; }
-  .badge-pending { background: #f3eefa; color: #5b2fa0; }
-  .badge-watch { background: #fdf6e3; color: #7a5700; }
-  .badge-atrisk { background: #fce8e8; color: #a32020; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',system-ui,sans-serif; background:#002D58; }
+  
+  .header {
+    height:64px; background:linear-gradient(135deg,#002D58,#003A6E);
+    display:flex; align-items:center; padding:0 28px; gap:20px;
+    border-bottom:3px solid #FFC220;
+  }
+  .header svg { flex-shrink:0; }
+  .header-text { flex:1; }
+  .header-title { color:#fff; font-size:1rem; font-weight:800; letter-spacing:-.01em; }
+  .header-sub { color:rgba(255,255,255,.5); font-size:.7rem; font-weight:600; margin-top:1px; }
+  
+  .legend { display:flex; gap:20px; align-items:center; }
+  .legend-item { display:flex; align-items:center; gap:7px; font-size:.72rem; font-weight:600; color:rgba(255,255,255,.75); }
+  .legend-dot { width:14px; height:14px; border-radius:50%; border:2px solid rgba(255,255,255,.3); }
+  .legend-count { font-weight:800; color:#fff; }
+  
+  .stats {
+    display:flex; gap:12px; align-items:center;
+  }
+  .stat-chip {
+    background:rgba(255,255,255,.08); padding:6px 14px; border-radius:7px;
+    font-size:.7rem; font-weight:700; color:rgba(255,255,255,.7);
+  }
+  .stat-chip strong { color:#FFC220; }
+  
+  #map { width:100%; height:calc(100vh - 64px); }
+  
+  .leaflet-popup-content-wrapper {
+    border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.15);
+    border:1px solid #E2E8F0; padding:0;
+  }
+  .leaflet-popup-content { margin:0; min-width:200px; }
+  .popup { padding:14px 16px; }
+  .pn { font-size:.95rem; font-weight:800; color:#002D58; margin-bottom:2px; }
+  .pc { font-size:.78rem; font-weight:600; color:#475569; }
+  .pa { font-size:.68rem; color:#94A3B8; margin-top:2px; }
+  .pt { font-size:.64rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+        padding:4px 10px; border-radius:5px; display:inline-block; margin-top:8px; }
+  .pt.b2x { background:#EFF6FF; color:#0071CE; }
+  .pt.wm { background:#F5F3FF; color:#7C3AED; }
+  .pd { font-size:.7rem; font-weight:700; color:#002D58; margin-top:6px; }
+  
+  .leaflet-control-zoom a {
+    background:#002D58 !important; color:#FFC220 !important;
+    border-color:rgba(255,255,255,.1) !important; font-weight:800;
+  }
+  .leaflet-control-zoom a:hover { background:#003A6E !important; }
 </style>
 </head>
 <body>
-
 <div class="header">
-  <h1>WMUS EdgeSense Gen 2 â†’ Gen 3 Conversion</h1>
-  <span class="date">Wed, Sep 23, 2026 Â· 24 stores</span>
+  <!-- Walmart Spark -->
+  <svg width="32" height="32" viewBox="0 0 38 38" fill="none">
+    <circle cx="19" cy="19" r="17" fill="#FFC220"/>
+    <path d="M19 6 L20.5 14 L28 14 L22 18.5 L24 27 L19 22 L14 27 L16 18.5 L10 14 L17.5 14 Z" fill="#002D58" transform="scale(0.7) translate(8,5)"/>
+  </svg>
+  <div class="header-text">
+    <div class="header-title">EdgeSense Gen 2 â†’ Gen 3 Conversion</div>
+    <div class="header-sub">Walmart US Store Map â€” All 45 Stores</div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:#0071CE"></span> B2X Conversion + RL <span class="legend-count">(24)</span></div>
+    <div class="legend-item"><span class="legend-dot" style="background:#7C3AED"></span> Reverse Logistics Only <span class="legend-count">(21)</span></div>
+  </div>
+  <div class="stats">
+    <div class="stat-chip"><strong>45</strong> Total Stores</div>
+    <div class="stat-chip">Deadline: <strong>Oct 31</strong></div>
+  </div>
 </div>
-
-<div class="legend">
-  <span><span class="dot" style="background:#2e8b57"></span>Complete</span>
-  <span><span class="dot" style="background:#e67e22"></span>Ready</span>
-  <span><span class="dot" style="background:#7b4fbf"></span>Pending</span>
-  <span><span class="dot" style="background:#d4a020"></span>Watch</span>
-  <span><span class="dot" style="background:#c84040"></span>At Risk</span>
-</div>
-
 <div id="map"></div>
-
 <script>
-const TODAY = new Date(2026, 8, 23);
-
-const STORES = [
-  { n: "#371", c: "Granbury, TX", addr: "735 E Highway 377", st: "installation scheduled", i: "10/11/26", lat: 32.4421, lng: -97.7942 },
-  { n: "#384", c: "Lumberton, TX", addr: "100 No. LHS Drive", st: "installation scheduled", i: "10/11/26", lat: 30.2657, lng: -94.1996 },
-  { n: "#396", c: "Anderson, SC", addr: "3812 Liberty Hwy", st: "installation scheduled", i: "10/11/26", lat: 34.5034, lng: -82.6501 },
-  { n: "#427", c: "Greenville, TX", addr: "7401 Interstate Highway 30", st: "installation scheduled", i: "10/11/26", lat: 33.1385, lng: -96.1108 },
-  { n: "#516", c: "Gun Barrel City, TX", addr: "1200 W Main St", st: "installation scheduled", i: "10/11/26", lat: 32.3293, lng: -96.1344 },
-  { n: "#872", c: "Pearland, TX", addr: "1919 N Main St", st: "installation scheduled", i: "10/11/26", lat: 29.5636, lng: -95.2860 },
-  { n: "#963", c: "Weatherford, TX", addr: "1836 S Main St", st: "installation scheduled", i: "10/11/26", lat: 32.7593, lng: -97.7973 },
-  { n: "#980", c: "Greeley, CO", addr: "3103 S 23rd Ave", st: "installation scheduled", i: "10/11/26", lat: 40.4233, lng: -104.7091 },
-  { n: "#1225", c: "Orange Park, FL", addr: "899 Blanding Blvd", st: "installation scheduled", i: "10/18/26", lat: 30.1661, lng: -81.7065 },
-  { n: "#1535", c: "Sioux Falls, SD", addr: "3209 S Louise Ave", st: "installation scheduled", i: "10/11/26", lat: 43.5460, lng: -96.7313 },
-  { n: "#1560", c: "Las Vegas, NV", addr: "6005 S Eastern Ave", st: "installation scheduled", i: "10/11/26", lat: 36.0858, lng: -115.0840 },
-  { n: "#1770", c: "Cranberry Twp, PA", addr: "20245 Route 19", st: "installation scheduled", i: "10/11/26", lat: 40.6850, lng: -80.1070 },
-  { n: "#2082", c: "Cerritos, CA", addr: "12701 Towne Center Dr", st: "installation scheduled", i: "10/04/26", lat: 33.8583, lng: -118.0648 },
-  { n: "#2135", c: "Cobleskill, NY", addr: "139 Merchant Pl", st: "installation scheduled", i: "10/11/26", lat: 42.6779, lng: -74.4854 },
-  { n: "#2667", c: "Dallas, TX", addr: "7401 Samuell Blvd", st: "installation scheduled", i: "10/04/26", lat: 32.7767, lng: -96.7970 },
-  { n: "#3284", c: "Arlington, TX", addr: "4800 US 287 Highway", st: "installation scheduled", i: "10/04/26", lat: 32.7357, lng: -97.1081 },
-  { n: "#3431", c: "Hudson Oaks, TX", addr: "2801 E Interstate 20", st: "installation scheduled", i: "10/04/26", lat: 32.7579, lng: -97.6967 },
-  { n: "#3631", c: "Crowley, TX", addr: "1221 FM 1187", st: "installation scheduled", i: "10/04/26", lat: 32.5790, lng: -97.3625 },
-  { n: "#4279", c: "Midlothian, TX", addr: "400 N Highway 67", st: "installation scheduled", i: "10/04/26", lat: 32.4824, lng: -96.9945 },
-  { n: "#5063", c: "Charlotte, NC", addr: "1830 Galleria Blvd", st: "installation scheduled", i: "10/18/26", lat: 35.2271, lng: -80.8431 },
-  { n: "#5288", c: "Seagoville, TX", addr: "220 N Highway 175", st: "installation scheduled", i: "10/04/26", lat: 32.6396, lng: -96.5383 },
-  { n: "#5359", c: "Azle, TX", addr: "721 Boyd Rd", st: "installation scheduled", i: "10/04/26", lat: 32.8951, lng: -97.5459 },
-  { n: "#5435", c: "San Jose, CA", addr: "777 Story Rd", st: "installation scheduled", i: "10/11/26", lat: 37.3382, lng: -121.8863 },
-  { n: "#7178", c: "Princeton, TX", addr: "701 W Princeton Dr", st: "installation scheduled", i: "10/18/26", lat: 33.1801, lng: -96.4980 }
-];
-
-const PIPELINE_SHORT = {
-  "vendor quote to request": "Quote to Request",
-  "installation scheduled": "Quote Requested",
-  "sow circulation required": "SOW Circulation",
-  "sow sent for signatures": "SOW Signatures",
-  "vendor po to issue": "PO to Issue",
-  "vendor po issued": "PO Issued",
-  "installation scheduled": "Scheduled",
-  "installation completed": "Installed",
-  "sign off received": "Sign-Off",
-  "payment released": "Payment",
-  "scope validated": "Validated",
-  "installation on-hold": "On Hold",
-  "cancelled": "Cancelled",
-  "completed": "Complete"
-};
-
-const PIPELINE = ["vendor quote to request","vendor quote requested","sow circulation required","sow sent for signatures","vendor po to issue","vendor po issued","installation scheduled","installation completed","sign off received","payment released","scope validated","installation on-hold","cancelled","completed"];
-
-function stageIdx(st) { return PIPELINE.indexOf(st); }
-function pD(s) { if (!s) return null; const p = s.split("/"); return new Date(2026, +p[0] - 1, +p[1]); }
-function df(a, b) { return Math.round((a - b) / 864e5); }
-function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
-
-const MILESTONES = {
-  quote: { confirmedAt: 2, deadlineDays: 14 },
-  procurement: { confirmedAt: 5, deadlineDays: 7 },
-  scheduling: { confirmedAt: 6, deadlineDays: 3 }
-};
-
-function milestoneStatus(s, key) {
-  const m = MILESTONES[key];
-  const idx = stageIdx(s.st);
-  const install = pD(s.i);
-  const deadline = addDays(install, -m.deadlineDays);
-  if (idx >= m.confirmedAt) return "ready";
-  const d = df(deadline, TODAY);
-  if (d < 0) return "atrisk";
-  if (d <= 5) return "watch";
-  return "pending";
-}
-
-const RANK = { atrisk: 0, watch: 1, pending: 2, ready: 3 };
-
-function evaluate(s) {
-  const idx = stageIdx(s.st);
-  if (idx >= 7 || s.st === "completed") return "complete";
-  const q = milestoneStatus(s, "quote"), p = milestoneStatus(s, "procurement"), sc = milestoneStatus(s, "scheduling");
-  if (q === "ready" && p === "ready" && sc === "ready") return "ready";
-  const parts = [];
-  if (q !== "ready") parts.push(q);
-  if (p !== "ready") parts.push(p);
-  if (sc !== "ready") parts.push(sc);
-  const worst = parts.sort((a, b) => RANK[a] - RANK[b])[0];
-  return worst === "ready" ? "pending" : worst;
-}
-
-const STATUS_COLOR = { complete: "#2e8b57", ready: "#e67e22", pending: "#7b4fbf", watch: "#d4a020", atrisk: "#c84040" };
-const STATUS_BADGE = { complete: "badge-complete", ready: "badge-ready", pending: "badge-pending", watch: "badge-watch", atrisk: "badge-atrisk" };
-const STATUS_LABEL = { complete: "Complete", ready: "Ready", pending: "Pending", watch: "Watch", atrisk: "At Risk" };
-
-const map = L.map("map").setView([36.5, -96], 4);
-
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  maxZoom: 18
+var map = L.map("map",{zoomControl:true}).setView([34.5,-96],5);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+  attribution:"&copy; OpenStreetMap",maxZoom:18
 }).addTo(map);
 
-STORES.forEach(s => {
-  const overall = evaluate(s);
-  const color = STATUS_COLOR[overall];
-  const install = pD(s.i);
-  const installStr = (install.getMonth() + 1) + "/" + install.getDate() + "/" + install.getFullYear().toString().slice(2);
-  const stageLabel = PIPELINE_SHORT[s.st] || s.st;
+// B2X Conversion + Reverse Logistics (Blue)
+  L.circleMarker([32.4421,-97.7942],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#371</div><div class="pc">Granbury, TX</div><div class="pa">735 E Highway 377</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([30.2657,-94.1996],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#384</div><div class="pc">Lumberton, TX</div><div class="pa">100 No. LHS Drive</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([34.5034,-82.6501],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#396</div><div class="pc">Anderson, SC</div><div class="pa">3812 Liberty Hwy</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([33.1385,-96.1108],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#427</div><div class="pc">Greenville, TX</div><div class="pa">7401 Interstate Hwy 30</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([32.3293,-96.1344],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#516</div><div class="pc">Gun Barrel City, TX</div><div class="pa">1200 W Main St</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([29.5636,-95.286],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#872</div><div class="pc">Pearland, TX</div><div class="pa">1919 N Main St</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([32.7593,-97.7973],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#963</div><div class="pc">Weatherford, TX</div><div class="pa">1836 S Main St</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([40.4233,-104.7091],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#980</div><div class="pc">Greeley, CO</div><div class="pa">3103 S 23rd Ave</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([30.1661,-81.7065],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#1225</div><div class="pc">Orange Park, FL</div><div class="pa">899 Blanding Blvd</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/18</div></div>');
+  L.circleMarker([43.546,-96.7313],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#1535</div><div class="pc">Sioux Falls, SD</div><div class="pa">3209 S Louise Ave</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([36.0858,-115.084],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#1560</div><div class="pc">Las Vegas, NV</div><div class="pa">6005 S Eastern Ave</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([40.685,-80.107],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#1770</div><div class="pc">Cranberry Twp, PA</div><div class="pa">20245 Route 19</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([33.8583,-118.0648],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#2082</div><div class="pc">Cerritos, CA</div><div class="pa">12701 Towne Center Dr</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/4</div></div>');
+  L.circleMarker([42.6779,-74.4854],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#2135</div><div class="pc">Cobleskill, NY</div><div class="pa">139 Merchant Pl</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([32.7767,-96.797],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#2667</div><div class="pc">Dallas, TX</div><div class="pa">7401 Samuell Blvd</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/4</div></div>');
+  L.circleMarker([32.7357,-97.1081],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#3284</div><div class="pc">Arlington, TX</div><div class="pa">4800 US 287 Hwy</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/4</div></div>');
+  L.circleMarker([32.7579,-97.6967],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#3431</div><div class="pc">Hudson Oaks, TX</div><div class="pa">2801 E Interstate 20</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/4</div></div>');
+  L.circleMarker([32.579,-97.3625],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#3631</div><div class="pc">Crowley, TX</div><div class="pa">1221 FM 1187</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/4</div></div>');
+  L.circleMarker([32.4824,-96.9945],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#4279</div><div class="pc">Midlothian, TX</div><div class="pa">400 N Highway 67</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/4</div></div>');
+  L.circleMarker([35.2271,-80.8431],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#5063</div><div class="pc">Charlotte, NC</div><div class="pa">1830 Galleria Blvd</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/18</div></div>');
+  L.circleMarker([32.6396,-96.5383],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#5288</div><div class="pc">Seagoville, TX</div><div class="pa">220 N Highway 175</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/4</div></div>');
+  L.circleMarker([32.8951,-97.5459],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#5359</div><div class="pc">Azle, TX</div><div class="pa">721 Boyd Rd</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/4</div></div>');
+  L.circleMarker([37.3382,-121.8863],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#5435</div><div class="pc">San Jose, CA</div><div class="pa">777 Story Rd</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/11</div></div>');
+  L.circleMarker([33.1801,-96.498],{radius:9,fillColor:"#0071CE",color:"#002D58",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#7178</div><div class="pc">Princeton, TX</div><div class="pa">701 W Princeton Dr</div><div class="pt b2x">B2X Conversion + Reverse Logistics</div><div class="pd">Install Start: 10/18</div></div>');
 
-  const marker = L.circleMarker([s.lat, s.lng], {
-    radius: 9,
-    fillColor: color,
-    color: "#fff",
-    weight: 2,
-    opacity: 1,
-    fillOpacity: 0.85
-  }).addTo(map);
-
-  marker.bindPopup(
-    '<div class="popup-store">' + s.n + '</div>' +
-    '<div class="popup-city">' + s.c + '</div>' +
-    '<div class="popup-addr">' + s.addr + '</div>' +
-    '<div class="popup-row"><strong>Install:</strong> ' + installStr + '</div>' +
-    '<div class="popup-row"><strong>Stage:</strong> ' + stageLabel + '</div>' +
-    '<div class="popup-row"><strong>Status:</strong> <span class="popup-badge ' + STATUS_BADGE[overall] + '">' + STATUS_LABEL[overall] + '</span></div>' +
-    '<a class="popup-link" href="' + (s.u || "#") + '" target="_blank">Open in ClickUp â†—</a>'
-  );
-
-  marker.bindTooltip(s.n, { permanent: false, direction: "top", offset: [0, -10] });
-});
+// Reverse Logistics Only (Purple)
+  L.circleMarker([34.774,-79.4612],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#1255</div><div class="pc">Laurinburg, NC</div><div class="pa">901 US Highway 401 S</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([37.9735,-121.2686],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#1554</div><div class="pc">Stockton, CA</div><div class="pa">3223 E Hammer Ln</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([40.1785,-122.2358],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#1608</div><div class="pc">Red Bluff, CA</div><div class="pa">608 Luther Road</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([33.1507,-96.8236],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#202</div><div class="pc">Frisco, TX</div><div class="pa">16066 State Hwy 121</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([41.5034,-74.0104],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#2104</div><div class="pc">Newburgh, NY</div><div class="pa">1201 Route 300</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([32.5421,-97.3208],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#220</div><div class="pc">Burleson, TX</div><div class="pa">951 SW Wilshire Blvd</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([32.3474,-97.3867],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#228</div><div class="pc">Cleburne, TX</div><div class="pa">1616 W Henderson St</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([41.3298,-74.1879],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#2637</div><div class="pc">Monroe, NY</div><div class="pa">288 Larkin Dr</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([32.7357,-96.2753],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#265</div><div class="pc">Terrell, TX</div><div class="pa">1900 W Moore Ave</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([32.9343,-97.0781],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#266</div><div class="pc">Grapevine, TX</div><div class="pa">1601 W State Hwy 114</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([35.9251,-86.8689],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#272</div><div class="pc">Franklin, TN</div><div class="pa">3600 Mallory Ln</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([36.2828,-115.2465],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#2884</div><div class="pc">Las Vegas, NV</div><div class="pa">8060 W Tropical Pkwy</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([32.6823,-97.3624],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#2978</div><div class="pc">Fort Worth, TX</div><div class="pa">7451 McCart Ave</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([32.8898,-97.2544],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#2980</div><div class="pc">Fort Worth, TX</div><div class="pa">8520 N Beach St</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([32.7139,-97.0969],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#3594</div><div class="pc">Pantego, TX</div><div class="pa">2610 W Pioneer Pkwy</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([36.332,-94.1185],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#3654</div><div class="pc">Rogers, AR</div><div class="pa">808 W Walnut St</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([33.1857,-96.8608],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#3777</div><div class="pc">Frisco, TX</div><div class="pa">12220 FM 423</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([33.0151,-96.5388],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#5210</div><div class="pc">Wylie, TX</div><div class="pa">2050 N Highway 78</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([33.236,-96.8011],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#6300</div><div class="pc">Prosper, TX</div><div class="pa">500 Richland Blvd</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([32.8084,-98.1128],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#804</div><div class="pc">Mineral Wells, TX</div><div class="pa">601 No. FM 1821</div><div class="pt wm">Reverse Logistics Only</div></div>');
+  L.circleMarker([32.7098,-97.0026],{radius:9,fillColor:"#7C3AED",color:"#4C1D95",weight:2.5,fillOpacity:0.9}).addTo(map).bindPopup('<div class="popup"><div class="pn">#896</div><div class="pc">Grand Prairie, TX</div><div class="pa">2225 W Interstate 20</div><div class="pt wm">Reverse Logistics Only</div></div>');
 </script>
 </body>
 </html>
