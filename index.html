@@ -39,6 +39,9 @@
   }
   .scope-b2x { background: rgba(0,113,206,.1); color: #0071CE; }
   .scope-rl { background: rgba(124,58,237,.1); color: #7C3AED; }
+  .store-popup .bar { height: 6px; background: #EEF2F7; border-radius: 3px; margin: 4px 0 2px; overflow: hidden; }
+  .store-popup .bar i { display: block; height: 100%; border-radius: 3px; }
+  .store-popup .st { font-weight: 700; }
 </style>
 </head>
 <body>
@@ -64,7 +67,7 @@
     </svg>
     <div>
       <h1>EdgeSense Gen 2 -> Gen 3 Conversion Program</h1>
-      <div class="sub">45 Stores Â· Live Deployment Tracking</div>
+      <div class="sub">45 Stores &middot; Live Deployment Tracking &middot; Updated Oct 21, 2026</div>
     </div>
   </div>
   <input type="text" id="search-box" placeholder="Search stores..." />
@@ -104,65 +107,79 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 18,
 }).addTo(map);
 
-// Store data: [name, city, lat, lng, scope]
+// Store data: [name, city, lat, lng, scope, status (updated Oct 21, 2026)]
 const stores = [
-  ["#2082","Cerritos, CA",33.8583,-118.0648,"B2X"],
-  ["#2667","Dallas, TX",32.7767,-96.7970,"B2X"],
-  ["#3431","Hudson Oaks, TX",32.7570,-97.6959,"B2X"],
-  ["#3631","Crowley, TX",32.5793,-97.3625,"B2X"],
-  ["#3284","Arlington, TX",32.7357,-97.1081,"B2X"],
-  ["#4279","Midlothian, TX",32.4824,-96.9945,"B2X"],
-  ["#5359","Azle, TX",32.8951,-97.5458,"B2X"],
-  ["#5288","Seagoville, TX",32.6365,-96.5375,"B2X"],
-  ["#371","Granbury, TX",32.4419,-97.7281,"B2X"],
-  ["#384","Lumberton, TX",30.2666,-94.2002,"B2X"],
-  ["#396","Anderson, SC",34.5034,-82.6501,"B2X"],
-  ["#427","Greenville, TX",33.1384,-96.1108,"B2X"],
-  ["#516","Gun Barrel City, TX",32.3343,-96.1186,"B2X"],
-  ["#872","Pearland, TX",29.5636,-95.2861,"B2X"],
-  ["#963","Weatherford, TX",32.7593,-97.7972,"B2X"],
-  ["#980","Greeley, CO",40.4233,-104.7091,"B2X"],
-  ["#1225","Orange Park, FL",30.1705,-81.7106,"B2X"],
-  ["#1535","Sioux Falls, SD",43.5446,-96.7311,"B2X"],
-  ["#1560","Las Vegas, NV",36.0830,-115.1530,"B2X"],
-  ["#1770","Cranberry Twp, PA",40.6850,-80.1070,"B2X"],
-  ["#2135","Cobleskill, NY",42.6779,-74.4854,"B2X"],
-  ["#5063","Charlotte, NC",35.1270,-80.5140,"B2X"],
-  ["#5435","San Jose, CA",37.3200,-121.8630,"B2X"],
-  ["#7178","Princeton, TX",33.1801,-96.4980,"B2X"],
-  ["#2104","Newburgh, NY",41.5034,-74.0104,"RL"],
-  ["#2637","Monroe, NY",41.3309,-74.1871,"RL"],
-  ["#3594","Pantego, TX",32.7143,-97.1570,"RL"],
-  ["#202","Frisco, TX",33.1507,-96.8236,"RL"],
-  ["#6300","Prosper, TX",33.2362,-96.8003,"RL"],
-  ["#272","Franklin, TN",35.9251,-86.8689,"RL"],
-  ["#1554","Stockton, CA",37.9577,-121.2908,"RL"],
-  ["#1255","Laurinburg, NC",34.7743,-79.4620,"RL"],
-  ["#2884","Las Vegas, NV",36.2700,-115.2240,"RL"],
-  ["#266","Grapevine, TX",32.9343,-97.0781,"RL"],
-  ["#2980","Fort Worth, TX",32.8880,-97.3180,"RL"],
-  ["#3777","Frisco, TX",33.1290,-96.8530,"RL"],
-  ["#220","Burleson, TX",32.5420,-97.3208,"RL"],
-  ["#228","Cleburne, TX",32.3477,-97.3867,"RL"],
-  ["#3654","Rogers, AR",36.3320,-94.1185,"RL"],
-  ["#265","Terrell, TX",32.7357,-96.2753,"RL"],
-  ["#804","Mineral Wells, TX",32.8084,-98.0678,"RL"],
-  ["#896","Grand Prairie, TX",32.6821,-97.0038,"RL"],
-  ["#2978","Fort Worth, TX",32.6565,-97.3810,"RL"],
-  ["#5210","Wylie, TX",33.0151,-96.5389,"RL"],
-  ["#1608","Red Bluff, CA",40.1785,-122.2358,"RL"],
+  ["#2082","Cerritos, CA",33.8583,-118.0648,"B2X",{"status": "Prelim sign-off Â· revisit needed", "pct": 49, "end": "10/15/26", "tl": "Ernesto Wettstein", "mat": "", "risk": "", "proj": "", "phase2": false, "rl": "Scheduled 10/21, not confirmed"}],
+  ["#2667","Dallas, TX",32.7767,-96.7970,"B2X",{"status": "Signed off", "pct": 100, "end": "10/15/26", "tl": "Nyasia Mobley", "mat": "", "risk": "", "proj": "", "phase2": false, "rl": "1st pickup 10/20 (packaging noncompliant; BOL pending)"}],
+  ["#3431","Hudson Oaks, TX",32.7570,-97.6959,"B2X",{"status": "Installing", "pct": 57, "end": "10/27/26", "tl": "Chad Phillips", "mat": "Green", "risk": "ok", "proj": "10/26", "phase2": false, "rl": ""}],
+  ["#3631","Crowley, TX",32.5793,-97.3625,"B2X",{"status": "Prelim sign-off Â· revisit needed", "pct": null, "end": "10/15/26", "tl": "Michal Szombara", "mat": "", "risk": "", "proj": "", "phase2": false, "rl": "Scheduled 10/21, not confirmed"}],
+  ["#3284","Arlington, TX",32.7357,-97.1081,"B2X",{"status": "Prelim sign-off Â· revisit needed", "pct": 78, "end": "10/15/26", "tl": "TJ Johnson", "mat": "", "risk": "", "proj": "", "phase2": false, "rl": "Disputed: store says freight already picked up by another party"}],
+  ["#4279","Midlothian, TX",32.4824,-96.9945,"B2X",{"status": "Installing", "pct": 75, "end": "10/27/26", "tl": "Thomas Skorzewski", "mat": "Green", "risk": "ok", "proj": "10/22", "phase2": false, "rl": ""}],
+  ["#5359","Azle, TX",32.8951,-97.5458,"B2X",{"status": "Signed off", "pct": 100, "end": "10/15/26", "tl": "Andreas Max - B2X", "mat": "", "risk": "", "proj": "", "phase2": false, "rl": "Scheduled 10/21, not confirmed"}],
+  ["#5288","Seagoville, TX",32.6365,-96.5375,"B2X",{"status": "Signed off", "pct": 100, "end": "10/15/26", "tl": "Thomas Skorzewski", "mat": "", "risk": "", "proj": "", "phase2": false, "rl": "Store says picked up 10/21; carrier / BOL unverified"}],
+  ["#371","Granbury, TX",32.4419,-97.7281,"B2X",{"status": "Installing", "pct": 25, "end": "10/29/26", "tl": "Yody LeÃ³n", "mat": "Green", "risk": "atrisk", "proj": "11/02", "phase2": true, "rl": ""}],
+  ["#384","Lumberton, TX",30.2666,-94.2002,"B2X",{"status": "Installing", "pct": 44, "end": "10/29/26", "tl": "Joseph M.", "mat": "Green", "risk": "ok", "proj": "10/26", "phase2": true, "rl": ""}],
+  ["#396","Anderson, SC",34.5034,-82.6501,"B2X",{"status": "Installing", "pct": 37, "end": "10/29/26", "tl": "Vernard Simmons", "mat": "Green", "risk": "ok", "proj": "10/28", "phase2": true, "rl": ""}],
+  ["#427","Greenville, TX",33.1384,-96.1108,"B2X",{"status": "Installing", "pct": 42, "end": "10/29/26", "tl": "David Moulder", "mat": "Green", "risk": "ok", "proj": "10/27", "phase2": true, "rl": ""}],
+  ["#516","Gun Barrel City, TX",32.3343,-96.1186,"B2X",{"status": "Installing", "pct": 65, "end": "10/22/26", "tl": "Daniel Rehm", "mat": "Green", "risk": "atrisk", "proj": "10/27", "phase2": false, "rl": ""}],
+  ["#872","Pearland, TX",29.5636,-95.2861,"B2X",{"status": "Installing", "pct": 25, "end": "10/29/26", "tl": "Miguel Vallejo", "mat": "Green", "risk": "atrisk", "proj": "11/02", "phase2": true, "rl": ""}],
+  ["#963","Weatherford, TX",32.7593,-97.7972,"B2X",{"status": "Installing", "pct": 24, "end": "10/29/26", "tl": "Christa Adkins", "mat": "Green", "risk": "atrisk", "proj": "11/03", "phase2": true, "rl": ""}],
+  ["#980","Greeley, CO",40.4233,-104.7091,"B2X",{"status": "Installing", "pct": 21, "end": "10/29/26", "tl": "Amber Cude", "mat": "Green", "risk": "atrisk", "proj": "11/05", "phase2": true, "rl": ""}],
+  ["#1225","Orange Park, FL",30.1705,-81.7106,"B2X",{"status": "Installing", "pct": 25, "end": "10/29/26", "tl": "Konrad Szombara", "mat": "Amber", "risk": "atrisk", "proj": "11/02", "phase2": true, "rl": ""}],
+  ["#1535","Sioux Falls, SD",43.5446,-96.7311,"B2X",{"status": "Installing", "pct": 21, "end": "10/29/26", "tl": "Ralf Lampe", "mat": "Green", "risk": "atrisk", "proj": "11/05", "phase2": true, "rl": ""}],
+  ["#1560","Las Vegas, NV",36.0830,-115.1530,"B2X",{"status": "Installing", "pct": 20, "end": "10/29/26", "tl": "Ernesto Wettstein", "mat": "Green", "risk": "atrisk", "proj": "11/05", "phase2": true, "rl": ""}],
+  ["#1770","Cranberry Twp, PA",40.6850,-80.1070,"B2X",{"status": "Installing", "pct": 26, "end": "10/29/26", "tl": "Filip Kolodziejczyk", "mat": "Green", "risk": "atrisk", "proj": "11/02", "phase2": true, "rl": ""}],
+  ["#2135","Cobleskill, NY",42.6779,-74.4854,"B2X",{"status": "Installing", "pct": 33, "end": "10/29/26", "tl": "Jean Kronkowski", "mat": "Amber", "risk": "watch", "proj": "10/29", "phase2": true, "rl": ""}],
+  ["#5063","Charlotte, NC",35.1270,-80.5140,"B2X",{"status": "Installing", "pct": 6, "end": "10/29/26", "tl": "Jeffrey Draper", "mat": "Green", "risk": "atrisk", "proj": "12/24", "phase2": true, "rl": ""}],
+  ["#5435","San Jose, CA",37.3200,-121.8630,"B2X",{"status": "Installing", "pct": 16, "end": "10/29/26", "tl": "Jonah B", "mat": "Green", "risk": "atrisk", "proj": "11/11", "phase2": true, "rl": ""}],
+  ["#7178","Princeton, TX",33.1801,-96.4980,"B2X",{"status": "Installing", "pct": 22, "end": "10/29/26", "tl": "Waldemar Wyrostkiewicz", "mat": "Green", "risk": "atrisk", "proj": "11/04", "phase2": true, "rl": ""}],
+  ["#2104","Newburgh, NY",41.5034,-74.0104,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#2637","Monroe, NY",41.3309,-74.1871,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#3594","Pantego, TX",32.7143,-97.1570,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#202","Frisco, TX",33.1507,-96.8236,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#6300","Prosper, TX",33.2362,-96.8003,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#272","Franklin, TN",35.9251,-86.8689,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#1554","Stockton, CA",37.9577,-121.2908,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#1255","Laurinburg, NC",34.7743,-79.4620,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#2884","Las Vegas, NV",36.2700,-115.2240,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#266","Grapevine, TX",32.9343,-97.0781,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#2980","Fort Worth, TX",32.8880,-97.3180,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#3777","Frisco, TX",33.1290,-96.8530,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#220","Burleson, TX",32.5420,-97.3208,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#228","Cleburne, TX",32.3477,-97.3867,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#3654","Rogers, AR",36.3320,-94.1185,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#265","Terrell, TX",32.7357,-96.2753,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#804","Mineral Wells, TX",32.8084,-98.0678,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#896","Grand Prairie, TX",32.6821,-97.0038,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#2978","Fort Worth, TX",32.6565,-97.3810,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#5210","Wylie, TX",33.0151,-96.5389,"RL",{"status": "Reverse logistics only", "rl": ""}],
+  ["#1608","Red Bluff, CA",40.1785,-122.2358,"RL",{"status": "Reverse logistics only", "rl": ""}],
 ];
 
 const markers = [];
+const statusColor = s => s.startsWith("Signed") ? "#059669" : s.startsWith("Prelim") ? "#B45309" : "#0071CE";
+const riskTxt = { atrisk: '<span style="color:#DC2626;font-weight:700">At risk</span>', watch: '<span style="color:#D97706;font-weight:700">Watch</span>', ok: '<span style="color:#059669;font-weight:700">On track</span>' };
+const ragColor = { Green: "#059669", Amber: "#D97706", Red: "#DC2626" };
 
-stores.forEach(([name, city, lat, lng, scope]) => {
+stores.forEach(([name, city, lat, lng, scope, info]) => {
   const icon = scope === "B2X" ? blueIcon : purpleIcon;
   const scopeClass = scope === "B2X" ? "scope-b2x" : "scope-rl";
   const scopeLabel = scope === "B2X" ? "B2X Conversion + RL" : "Reverse Logistics Only";
+  let details = "";
+  if (scope === "B2X" && info) {
+    const pct = info.pct;
+    details += `<p class="st" style="color:${statusColor(info.status)}">${info.status}${info.phase2 ? " &middot; Phase 2" : ""}</p>`;
+    if (pct !== null && pct !== undefined) details += `<p>${pct}% complete</p><div class="bar"><i style="width:${Math.min(100, pct)}%;background:${statusColor(info.status)}"></i></div>`;
+    if (info.end) details += `<p>End date: ${info.end}${info.proj && info.risk ? " &middot; Projected " + info.proj + " (" + (riskTxt[info.risk] || info.risk) + ")" : ""}</p>`;
+    if (info.mat) details += `<p>Material: <span style="color:${ragColor[info.mat] || "#555"};font-weight:700">${info.mat}</span></p>`;
+    if (info.tl) details += `<p>Team lead: ${info.tl}</p>`;
+  }
+  if (info && info.rl) details += `<p>RL: ${info.rl}</p>`;
   const m = L.marker([lat, lng], { icon })
     .bindPopup(`<div class="store-popup">
       <h3>Store ${name}</h3>
       <p>${city}</p>
+      ${details}
       <span class="scope-badge ${scopeClass}">${scopeLabel}</span>
     </div>`)
     .addTo(map);
@@ -187,7 +204,11 @@ legend.onAdd = function() {
   const div = L.DomUtil.create('div', 'legend');
   div.innerHTML = '<strong>Store Types</strong><br>' +
     '<span class="legend-dot" style="background:#0071CE"></span> B2X Conversion + RL (24)<br>' +
-    '<span class="legend-dot" style="background:#7C3AED"></span> Reverse Logistics Only (21)';
+    '<span class="legend-dot" style="background:#7C3AED"></span> Reverse Logistics Only (21)<br>' +
+    '<strong>Conversion status (Oct 21)</strong><br>' +
+    '<span class="legend-dot" style="background:#059669"></span> Signed off (3)<br>' +
+    '<span class="legend-dot" style="background:#B45309"></span> Prelim sign-off &middot; revisit (3)<br>' +
+    '<span class="legend-dot" style="background:#0071CE"></span> Installing (18) &middot; 12 at risk';
   return div;
 };
 legend.addTo(map);
