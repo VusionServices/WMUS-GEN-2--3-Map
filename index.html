@@ -100,6 +100,8 @@ function makeIcon(color) {
 
 const blueIcon = makeIcon('#0071CE');
 const purpleIcon = makeIcon('#7C3AED');
+const ICONS = { signed: makeIcon('#059669'), prelim: makeIcon('#B45309'), atrisk: makeIcon('#DC2626'), watch: makeIcon('#D97706'), ok: makeIcon('#0071CE') };
+const pinKey = (info) => !info ? 'ok' : info.status.startsWith('Signed') ? 'signed' : info.status.startsWith('Prelim') ? 'prelim' : (info.risk === 'atrisk' ? 'atrisk' : info.risk === 'watch' ? 'watch' : 'ok');
 
 const map = L.map('map').setView([37.5, -96], 4);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -162,7 +164,7 @@ const riskTxt = { atrisk: '<span style="color:#DC2626;font-weight:700">At risk</
 const ragColor = { Green: "#059669", Amber: "#D97706", Red: "#DC2626" };
 
 stores.forEach(([name, city, lat, lng, scope, info]) => {
-  const icon = scope === "B2X" ? blueIcon : purpleIcon;
+  const icon = scope === "B2X" ? ICONS[pinKey(info)] : purpleIcon;
   const scopeClass = scope === "B2X" ? "scope-b2x" : "scope-rl";
   const scopeLabel = scope === "B2X" ? "B2X Conversion + RL" : "Reverse Logistics Only";
   let details = "";
@@ -202,13 +204,13 @@ document.getElementById('search-box').addEventListener('input', function(e) {
 const legend = L.control({ position: 'bottomright' });
 legend.onAdd = function() {
   const div = L.DomUtil.create('div', 'legend');
-  div.innerHTML = '<strong>Store Types</strong><br>' +
-    '<span class="legend-dot" style="background:#0071CE"></span> B2X Conversion + RL (24)<br>' +
-    '<span class="legend-dot" style="background:#7C3AED"></span> Reverse Logistics Only (21)<br>' +
-    '<strong>Conversion status (Oct 21)</strong><br>' +
+  div.innerHTML = '<strong>Conversion status (Oct 21)</strong><br>' +
     '<span class="legend-dot" style="background:#059669"></span> Signed off (3)<br>' +
     '<span class="legend-dot" style="background:#B45309"></span> Prelim sign-off &middot; revisit (3)<br>' +
-    '<span class="legend-dot" style="background:#0071CE"></span> Installing (18) &middot; 12 at risk';
+    '<span class="legend-dot" style="background:#DC2626"></span> Installing &middot; at risk (12)<br>' +
+    '<span class="legend-dot" style="background:#D97706"></span> Installing &middot; watch (1)<br>' +
+    '<span class="legend-dot" style="background:#0071CE"></span> Installing &middot; on track (5)<br>' +
+    '<span class="legend-dot" style="background:#7C3AED"></span> Reverse logistics only (21)';
   return div;
 };
 legend.addTo(map);
